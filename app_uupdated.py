@@ -188,8 +188,8 @@ if uploaded_file:
         st.subheader(" نواقص الوافدين ")
         
         df_non_citizens = df[df['الجنسية'] != 'إماراتية'].copy()
-        missing_percent_n = filtered_non_df.isnull().mean() * 100
-        missing_count_n = filtered_non_df.isnull().sum()
+        missing_percent_n = df_non_citizens.isnull().mean() * 100
+        missing_count_n = df_non_citizens.isnull().sum()
 
         missing_df_n = pd.DataFrame({
             'العمود': df_non_citizens.columns,
