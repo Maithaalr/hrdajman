@@ -111,7 +111,7 @@ if uploaded_file:
                 religion_counts.columns = ['الديانة', 'العدد']
                 fig_religion = px.bar(religion_counts, x='الديانة', y='العدد',
                                       color='الديانة',
-                                      color_discrete_sequence=px.colors.sequential.Blues)
+                                      color_discrete_sequence=['#2F4156', '#567C8D'])
                 fig_religion.update_layout(title='توزيع الموظفين حسب الديانة', title_x=0.5)
                 st.plotly_chart(fig_religion, use_container_width=True)
 
