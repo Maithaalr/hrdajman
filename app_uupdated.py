@@ -116,15 +116,36 @@ if uploaded_file:
                 st.plotly_chart(fig_religion, use_container_width=True)
 
         col3, col4 = st.columns(2)
-
         with col3:
             if 'الدائرة' in df.columns:
                 dept_counts = df['الدائرة'].value_counts()
-                fig_dept = go.Figure(data=[go.Pie(labels=dept_counts.index,
-                                                  values=dept_counts.values,
-                                                  hole=0.4,
-                                                  marker=dict(colors=px.colors.sequential.Blues),
-                                                  textinfo='label+percent')])
+
+                sorted_depts = dept_counts.sort_values()
+                normalized = (sorted_depts - sorted_depts.min()) / (sorted_depts.max() - sorted_depts.min())
+
+                from matplotlib import cm
+                import numpy as np
+
+                color_scale = cm.get_cmap('Blues')
+                colors_custom = [
+                    f"rgb{tuple((np.array(color_scale(val)[:3]) * 255).astype(int))}"
+                    for val in normalized
+                ]
+
+
+                # إعداد تسميات مخصصة تشمل الاسم + عدد الموظفين
+               labels = [f"{dept} | {count} موظف" for dept, count in zip(sorted_depts.index, sorted_depts.values)]
+
+               fig_dept = go.Figure(data=[go.Pie(
+                   labels=labels,
+                   values=sorted_depts.values,
+                   hole=0.4,
+                   marker=dict(colors=colors_custom),
+                   textinfo='label+percent',
+                   textposition='inside'
+               )])
+
+
                 fig_dept.update_layout(title='نسبة الموظفين حسب الدائرة', title_x=0.5)
                 st.plotly_chart(fig_dept, use_container_width=True)
 
