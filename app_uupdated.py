@@ -61,6 +61,11 @@ if uploaded_file:
             total_per_dept = job_dept_counts.groupby('الدائرة')['العدد'].transform('sum')
             job_dept_counts['النسبة المئوية'] = round((job_dept_counts['العدد'] / total_per_dept) * 100, 1)
 
+            custom_colors = {
+                'أساسية': '#1E3D59',  # مثل لون بكالوريوس
+                'داعمة': '#76A4C4'     # مثل لون دبلوم
+            }
+
             fig_stack = px.bar(
                 job_dept_counts,
                 x='الدائرة',
