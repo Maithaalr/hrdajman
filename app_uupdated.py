@@ -77,6 +77,22 @@ if uploaded_file:
                 yaxis_title='عدد الموظفين'
             )
             st.plotly_chart(fig_nat, use_container_width=True)
+            # جدول الجنسية مع العدد والنسبة
+            st.markdown("#### جدول الجنسيات مع العدد والنسبة:")
+            st.dataframe(nationality_counts)
+
+            # تمثيل بياني إضافي (Pie Chart)
+            fig_pie = px.pie(
+                nationality_counts,
+                names='الجنسية',
+                values='العدد',
+                hole=0.3,
+                title='نسبة الموظفين حسب الجنسية (Pie Chart)',
+                color_discrete_sequence=px.colors.sequential.Blues
+            )
+            fig_pie.update_traces(textinfo='percent+label')
+            st.plotly_chart(fig_pie, use_container_width=True)
+
 
     with tab3:
         st.markdown("### تحليل البيانات المفقودة")
