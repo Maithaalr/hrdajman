@@ -123,6 +123,7 @@ if uploaded_file:
                                 {data['العدد']} موظف ({data['النسبة المئوية']}%)
                             </div>
                         """, unsafe_allow_html=True)
+            st.markdown("<br>", unsafe_allow_html=True)
 
 
     with tab3:
