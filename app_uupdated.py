@@ -132,6 +132,31 @@ if uploaded_file:
 
             st.markdown("<br>", unsafe_allow_html=True)
 
+            st.markdown("### توزيع الموظفين حسب نوع الوظيفة والدائرة (Stacked Bar Chart)")
+
+            if 'نوع الوظيفة' in df.columns and 'الدائرة' in df.columns:
+                job_dept_counts = df.groupby(['الدائرة', 'نوع الوظيفة']).size().reset_index(name='العدد')
+
+                # حساب النسبة المئوية من مجموع كل دائرة
+                total_per_dept = job_dept_counts.groupby('الدائرة')['العدد'].transform('sum')
+                job_dept_counts['النسبة المئوية'] = round((job_dept_counts['العدد'] / total_per_dept) * 100, 1)
+
+                fig_stack = px.bar(
+                    job_dept_counts,
+                    x='الدائرة',
+                    y='العدد',
+                    color='نوع الوظيفة',
+                    text=job_dept_counts.apply(lambda row: f"{row['العدد']} ({row['النسبة المئوية']}%)", axis=1),
+                    color_discrete_sequence=px.colors.sequential.Blues,
+                    title="Stacked Bar - توزيع الوظائف حسب الدوائر"
+                )
+
+                fig_stack.update_layout(barmode='stack', title_x=0.5, xaxis_title='الدائرة', yaxis_title='عدد الموظفين')
+                st.plotly_chart(fig_stack, use_container_width=True)
+            else:
+                st.warning("البيانات لا تحتوي على أعمدة 'اسم الوظيفة' و 'الدائرة'.")
+
+
 
     with tab3:
         st.markdown("### تحليل البيانات المفقودة")
