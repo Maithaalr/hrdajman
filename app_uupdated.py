@@ -136,7 +136,7 @@ if uploaded_file:
                 # إعداد تسميات مخصصة تشمل الاسم + عدد الموظفين
                 labels = [f"{dept} | {count} موظف" for dept, count in zip(sorted_depts.index, sorted_depts.values)]
 
-               fig_dept = go.Figure(data=[go.Pie(
+                fig_dept = go.Figure(data=[go.Pie(
                    labels=labels,
                    values=sorted_depts.values,
                    hole=0.4,
