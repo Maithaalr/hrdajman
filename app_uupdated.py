@@ -93,27 +93,37 @@ if uploaded_file:
             fig_pie.update_traces(textinfo='percent+label')
             st.plotly_chart(fig_pie, use_container_width=True)
 
-            st.markdown("### تفاصيل الجنسيات:")
 
-            # توليد الألوان من درجات الأزرق تدريجياً
-            colors = px.colors.sequential.Blues[-len(nationality_counts):]  # تدريج من الأزرق الفاتح إلى الغامق
+            st.markdown("### تفاصيل الجنسيات (كل 5 في صف):")
 
-            for i, row in nationality_counts.iterrows():
-                box_color = colors[i % len(colors)]
-                st.markdown(f"""
-                    <div style='
-                        background-color:{box_color};
-                        padding: 18px;
-                        border-radius: 12px;
-                        margin-bottom: 10px;
-                        text-align: center;
-                        color: white;
-                        font-size: 18px;
-                        font-weight: bold;'>
-                        {row['الجنسية']}<br>
-                        {row['العدد']} موظف ({row['النسبة المئوية']}%)
-                    </div>
-                """, unsafe_allow_html=True)
+            # توليد الألوان من درجات الأزرق
+            colors = px.colors.sequential.Blues[-len(nationality_counts):]
+
+            # عرض 5 جنسيات في كل صف
+            for i in range(0, len(nationality_counts), 5):
+                row = nationality_counts.iloc[i:i+5]
+                cols = st.columns(len(row))  # عدد الأعمدة حسب عدد الجنسيات المتبقية
+
+                for idx, (j, data) in enumerate(row.iterrows()):
+                    with cols[idx]:
+                        st.markdown(f"""
+                            <div style='
+                                background-color:{colors[j % len(colors)]};
+                                padding: 10px;
+                                border-radius: 10px;
+                                text-align: center;
+                                color: white;
+                                font-size: 14px;
+                                font-weight: bold;
+                                height: 100px;
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: center;'>
+                                {data['الجنسية']}<br>
+                                {data['العدد']} موظف ({data['النسبة المئوية']}%)
+                            </div>
+                        """, unsafe_allow_html=True)
+
 
     with tab3:
         st.markdown("### تحليل البيانات المفقودة")
