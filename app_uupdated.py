@@ -94,35 +94,42 @@ if uploaded_file:
             st.plotly_chart(fig_pie, use_container_width=True)
 
 
-            st.markdown("### تفاصيل الجنسيات (كل 5 في صف):")
+        st.markdown("### تفاصيل الجنسيات (كل 5 في صف):")
 
-            # توليد الألوان من درجات الأزرق
-            colors = px.colors.sequential.Blues[-len(nationality_counts):]
+        colors = px.colors.sequential.Blues[-len(nationality_counts):]
 
-            # عرض 5 جنسيات في كل صف
-            for i in range(0, len(nationality_counts), 5):
-                row = nationality_counts.iloc[i:i+5]
-                cols = st.columns(len(row))  # عدد الأعمدة حسب عدد الجنسيات المتبقية
+        for i in range(0, len(nationality_counts), 5):
+            row = nationality_counts.iloc[i:i+5]
 
-                for idx, (j, data) in enumerate(row.iterrows()):
-                    with cols[idx]:
-                        st.markdown(f"""
-                            <div style='
-                                background-color:{colors[j % len(colors)]};
-                                padding: 10px;
-                                border-radius: 10px;
-                                text-align: center;
-                                color: white;
-                                font-size: 14px;
-                                font-weight: bold;
-                                height: 100px;
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: center;'>
-                                {data['الجنسية']}<br>
-                                {data['العدد']} موظف ({data['النسبة المئوية']}%)
-                            </div>
-                        """, unsafe_allow_html=True)
+            # بناء أعمدة مع فواصل بينهم (مساحة 0.1 لكل فاصل)
+            layout = []
+            for _ in range(len(row) - 1):
+                layout.extend([1, 0.1])
+            layout.append(1)
+            cols = st.columns(layout)
+
+            col_idx = 0
+            for j, data in row.iterrows():
+                with cols[col_idx]:
+                    st.markdown(f"""
+                        <div style='
+                            background-color:{colors[j % len(colors)]};
+                            padding: 10px;
+                            border-radius: 10px;
+                            text-align: center;
+                            color: white;
+                            font-size: 14px;
+                            font-weight: bold;
+                            height: 100px;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;'>
+                            {data['الجنسية']}<br>
+                            {data['العدد']} موظف ({data['النسبة المئوية']}%)
+                        </div>
+                    """, unsafe_allow_html=True)
+                col_idx += 2  # نتجاوز فاصل كل مرة
+
             st.markdown("<br>", unsafe_allow_html=True)
 
 
