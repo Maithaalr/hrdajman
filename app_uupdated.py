@@ -52,109 +52,29 @@ if uploaded_file:
     with tab2:
         st.markdown("### التحليلات البصرية")
 
-        if 'الجنسية' in df.columns:
-            nationality_counts = df['الجنسية'].value_counts().reset_index()
-            nationality_counts.columns = ['الجنسية', 'العدد']
-            total_employees = nationality_counts['العدد'].sum()
-            nationality_counts['النسبة المئوية'] = nationality_counts['العدد'] / total_employees * 100
-            nationality_counts['النسبة المئوية'] = nationality_counts['النسبة المئوية'].round(1)
+        st.markdown("### توزيع الموظفين حسب نوع الوظيفة والدائرة (Stacked Bar Chart)")
 
-            st.write(f"**إجمالي عدد الجنسيات:** {nationality_counts.shape[0]}")
+        if 'نوع الوظيفة' in df.columns and 'الدائرة' in df.columns:
+            job_dept_counts = df.groupby(['الدائرة', 'نوع الوظيفة']).size().reset_index(name='العدد')
 
-            fig_nat = px.bar(
-                nationality_counts,
-                x='الجنسية',
+            # حساب النسبة المئوية من مجموع كل دائرة
+            total_per_dept = job_dept_counts.groupby('الدائرة')['العدد'].transform('sum')
+            job_dept_counts['النسبة المئوية'] = round((job_dept_counts['العدد'] / total_per_dept) * 100, 1)
+
+            fig_stack = px.bar(
+                job_dept_counts,
+                x='الدائرة',
                 y='العدد',
-                text=nationality_counts['النسبة المئوية'].apply(lambda x: f"{x}%"),
-                color='الجنسية',
-                color_discrete_sequence=px.colors.sequential.Blues
-            )
-
-            fig_nat.update_layout(
-                title='عدد الموظفين ونسبهم حسب الجنسية',
-                title_x=0.5,
-                xaxis_title='الجنسية',
-                yaxis_title='عدد الموظفين'
-            )
-            st.plotly_chart(fig_nat, use_container_width=True)
-            # جدول الجنسية مع العدد والنسبة
-            st.markdown("#### جدول الجنسيات مع العدد والنسبة:")
-            st.dataframe(nationality_counts)
-
-            # تمثيل بياني إضافي (Pie Chart)
-            fig_pie = px.pie(
-                nationality_counts,
-                names='الجنسية',
-                values='العدد',
-                hole=0.3,
-                title='نسبة الموظفين حسب الجنسية (Pie Chart)',
-                color_discrete_sequence=px.colors.sequential.Blues
-            )
-            fig_pie.update_traces(textinfo='percent+label')
-            st.plotly_chart(fig_pie, use_container_width=True)
-
-
-        st.markdown("### تفاصيل الجنسيات (كل 5 في صف):")
-
-        colors = px.colors.sequential.Blues[-len(nationality_counts):]
-
-        for i in range(0, len(nationality_counts), 5):
-            row = nationality_counts.iloc[i:i+5]
-
-            # بناء أعمدة مع فواصل بينهم (مساحة 0.1 لكل فاصل)
-            layout = []
-            for _ in range(len(row) - 1):
-                layout.extend([1, 0.1])
-            layout.append(1)
-            cols = st.columns(layout)
-
-            col_idx = 0
-            for j, data in row.iterrows():
-                with cols[col_idx]:
-                    st.markdown(f"""
-                        <div style='
-                            background-color:{colors[j % len(colors)]};
-                            padding: 10px;
-                            border-radius: 10px;
-                            text-align: center;
-                            color: white;
-                            font-size: 14px;
-                            font-weight: bold;
-                            height: 100px;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;'>
-                            {data['الجنسية']}<br>
-                            {data['العدد']} موظف ({data['النسبة المئوية']}%)
-                        </div>
-                    """, unsafe_allow_html=True)
-                col_idx += 2  # نتجاوز فاصل كل مرة
-
-            st.markdown("<br>", unsafe_allow_html=True)
-
-            st.markdown("### توزيع الموظفين حسب نوع الوظيفة والدائرة (Stacked Bar Chart)")
-
-            if 'نوع الوظيفة' in df.columns and 'الدائرة' in df.columns:
-                job_dept_counts = df.groupby(['الدائرة', 'نوع الوظيفة']).size().reset_index(name='العدد')
-
-                # حساب النسبة المئوية من مجموع كل دائرة
-                total_per_dept = job_dept_counts.groupby('الدائرة')['العدد'].transform('sum')
-                job_dept_counts['النسبة المئوية'] = round((job_dept_counts['العدد'] / total_per_dept) * 100, 1)
-
-                fig_stack = px.bar(
-                    job_dept_counts,
-                    x='الدائرة',
-                    y='العدد',
-                    color='نوع الوظيفة',
-                    text=job_dept_counts.apply(lambda row: f"{row['العدد']} ({row['النسبة المئوية']}%)", axis=1),
-                    color_discrete_sequence=px.colors.sequential.Blues,
-                    title="Stacked Bar - توزيع الوظائف حسب الدوائر"
+                color='نوع الوظيفة',
+                text=job_dept_counts.apply(lambda row: f"{row['العدد']} ({row['النسبة المئوية']}%)", axis=1),
+                color_discrete_sequence=px.colors.sequential.Blues,
+                title="Stacked Bar - توزيع الوظائف حسب الدوائر"
                 )
 
-                fig_stack.update_layout(barmode='stack', title_x=0.5, xaxis_title='الدائرة', yaxis_title='عدد الموظفين')
-                st.plotly_chart(fig_stack, use_container_width=True)
-            else:
-                st.warning("البيانات لا تحتوي على أعمدة 'اسم الوظيفة' و 'الدائرة'.")
+            fig_stack.update_layout(barmode='stack', title_x=0.5, xaxis_title='الدائرة', yaxis_title='عدد الموظفين')
+            st.plotly_chart(fig_stack, use_container_width=True)
+        else:
+            st.warning("البيانات لا تحتوي على أعمدة 'اسم الوظيفة' و 'الدائرة'.")
 
 
 
