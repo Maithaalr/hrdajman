@@ -72,7 +72,7 @@ if uploaded_file:
                 y='العدد',
                 color='نوع الوظيفة',
                 text=job_dept_counts.apply(lambda row: f"{row['العدد']} ({row['النسبة المئوية']}%)", axis=1),
-                color_discrete_sequence=px.colors.sequential.Blues,
+                color_discrete_map=custom_colors,
                 title="Stacked Bar - توزيع الوظائف حسب الدوائر"
                 )
 
