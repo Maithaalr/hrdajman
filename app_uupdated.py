@@ -54,58 +54,28 @@ if uploaded_file:
 
         st.markdown("### توزيع الموظفين حسب نوع الوظيفة والدائرة (Stacked Bar Chart)")
 
-        if 'نوع الوظيفة' in df.columns and 'الدائرة' in df.columns:
-            job_dept_counts = df.groupby(['الدائرة', 'نوع الوظيفة']).size().reset_index(name='العدد')
+        if 'نوع العقد' in df.columns and 'الدائرة' in df.columns:
+            job_dept_counts = df.groupby(['الدائرة', 'نوع العقد ']).size().reset_index(name='العدد')
 
             # حساب النسبة المئوية من مجموع كل دائرة
             total_per_dept = job_dept_counts.groupby('الدائرة')['العدد'].transform('sum')
             job_dept_counts['النسبة المئوية'] = round((job_dept_counts['العدد'] / total_per_dept) * 100, 1)
 
-            custom_colors = {
-                'أساسية': '#1E3D59',  # مثل لون بكالوريوس
-                'داعمة': '#76A4C4'     # مثل لون دبلوم
-            }
 
             fig_stack = px.bar(
                 job_dept_counts,
                 x='الدائرة',
                 y='العدد',
-                color='نوع الوظيفة',
+                color='نوع العقد',
                 text=job_dept_counts.apply(lambda row: f"{row['العدد']} ({row['النسبة المئوية']}%)", axis=1),
-                color_discrete_map=custom_colors,
-                title="Stacked Bar - توزيع الوظائف حسب الدوائر"
+                color_continuous_scale=px.colors.sequential.Blues,
+                title="Stacked Bar - توزيع العقود حسب الدوائر"
                 )
 
             fig_stack.update_layout(barmode='stack', title_x=0.5, xaxis_title='الدائرة', yaxis_title='عدد الموظفين')
             st.plotly_chart(fig_stack, use_container_width=True)
         else:
             st.warning("البيانات لا تحتوي على أعمدة 'اسم الوظيفة' و 'الدائرة'.")
-
-
-        st.markdown("### توزيع الموظفين حسب نوع العقد")
-
-        if 'نوع العقد' in df.columns:
-            contract_counts = df['نوع العقد'].value_counts().reset_index()
-            contract_counts.columns = ['نوع العقد', 'العدد']
-            contract_counts['النسبة'] = round((contract_counts['العدد'] / contract_counts['العدد'].sum()) * 100, 1)
-            contract_counts['التسمية'] = contract_counts.apply(
-                lambda row: f"{row['نوع العقد']} | {row['العدد']} ({row['النسبة']}%)", axis=1
-            )
-
-            fig_contract = px.bar(
-                contract_counts,
-                x='نوع العقد',
-                y='العدد',
-                text='التسمية',
-                color='عدد',
-                color_continuous_scale=px.colors.sequential.Blues
-            )
-
-            fig_contract.update_traces(textposition='outside')
-            fig_contract.update_layout(title='Bar Chart - توزيع نوع العقد', title_x=0.5)
-            st.plotly_chart(fig_contract, use_container_width=True)
-        else:
-            st.warning("⚠️ لا يوجد عمود 'نوع العقد' في البيانات.")
 
 
 
