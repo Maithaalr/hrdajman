@@ -82,6 +82,33 @@ if uploaded_file:
             st.warning("البيانات لا تحتوي على أعمدة 'اسم الوظيفة' و 'الدائرة'.")
 
 
+        st.markdown("### توزيع الموظفين حسب نوع العقد")
+
+        if 'نوع العقد' in df.columns:
+            contract_counts = df['نوع العقد'].value_counts().reset_index()
+            contract_counts.columns = ['نوع العقد', 'العدد']
+            contract_counts['النسبة'] = round((contract_counts['العدد'] / contract_counts['العدد'].sum()) * 100, 1)
+            contract_counts['التسمية'] = contract_counts.apply(
+                lambda row: f"{row['نوع العقد']} | {row['العدد']} ({row['النسبة']}%)", axis=1
+            )
+
+            fig_contract = px.bar(
+                contract_counts,
+                x='نوع العقد',
+                y='العدد',
+                text='التسمية',
+                color='عدد',
+                color_continuous_scale=px.colors.sequential.Blues
+            )
+
+            fig_contract.update_traces(textposition='outside')
+            fig_contract.update_layout(title='Bar Chart - توزيع نوع العقد', title_x=0.5)
+            st.plotly_chart(fig_contract, use_container_width=True)
+        else:
+            st.warning("⚠️ لا يوجد عمود 'نوع العقد' في البيانات.")
+
+
+
 
     with tab3:
         st.markdown("### تحليل البيانات المفقودة")
