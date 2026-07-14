@@ -18,7 +18,7 @@ def read_file(f):
 if uploaded:
     df = read_file(uploaded)
 
-    required = ["Relation","DOB"]
+    required = ["RELATION","DOB"]
     missing = [c for c in required if c not in df.columns]
 
     if missing:
@@ -29,7 +29,7 @@ if uploaded:
     df["DOB"] = pd.to_datetime(df["DOB"], errors="coerce")
 
     def calc(row):
-        rel = str(row["Relation"]).strip().lower()
+        rel = str(row["RELATION"]).strip().lower()
 
         if rel == "son":
             age = 18
